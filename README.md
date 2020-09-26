@@ -128,7 +128,7 @@ Model B will be our final model and we will use in our next step, model interpre
 We will use Shap to help explain our model because it is provides a clear picture as to how each independent variables impact the model outcomes.
 
 ### Feature Important
-![](/img/shap_val_by_fea.png?raw=true)
+![](/img/shap_fea_imp.png?raw=true)
 
 Observations
 * The 'total day minutes' and 'voice mail plan_yes' features have the biggest impact on the model outcome. It changes the predicted churn probability by about 120% (approx. 1.2 on the x-axis) and 98% on average respectively.
