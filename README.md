@@ -9,9 +9,9 @@
 * [Model Evaluation](#Model-Evaluation)
 * [Alternate Model Model B](#Alternate-Model-Model-B)
 * [Model B Evaluation](#Model-B-Evaluation)
-* [Interpretaions](#Interpretations)
+* [Interpretaion](#Interpretations)
 * [Conclusion](#Conclusion)
-* [Recommendations](#Recommendations)
+* [Recommendation](#Recommendations)
 * [Future Work](#Future-Work)
 
 ## Repo Structure
@@ -68,13 +68,13 @@ Create a baseline Model that composes of 4 classifiers, Logistic Regression, KNN
 Baselilne model classification scores
 ![](/img/baseline_scores.png?raw=true)
 
-Churn Column examination reveals imbalance issue.
+Churn Column examination reveals class imbalance issue.
 
 Churn distribution plot
 ![](/img/sld_churn.png?raw=true)
 
 ### Transform training data with SMOTE
-To address the class imblance issue, we used SMOTE to transform the training data and fit the model.
+To address the class imblance issue, we use SMOTE to transform the training data and fit the model.
 
 Scores changes SMOTE scores vs baseline
 ![](/img/smote_baseline_comp.png?raw=true)
@@ -128,7 +128,7 @@ The XGBoost in Model B outperformed Model A in all aspect of the scores.
 
 Model B will be our final model and we will use in our next step, model interpretation.
 
-## Interpretations
+## Interpretation
 We will use Shap to help explain our model because it is provides a clear picture as to how each independent variables impact the model outcomes.
 
 ### Feature Important
@@ -166,7 +166,7 @@ All of the selected supervised learning methods in this project are capable of t
 
 We picked Model B because Model B have a higher scorings in the classification report than Model A. Furthermore, Model B seems to be less overfitting than Model A. Lastly, Model B AUC score is significantly higher than Model A.
 
-## Recommendations
+## Recommendation
 Based on the available data, our model is able to identify which explanatory variables have the biggest impact on the Churn rate. We will based our recommendations based on our top four features.
 
 1. 'Total day minutes': Customers with high number of minutes used during the day, have a greater chance of churn. A remedy to such problem would be to review the pricing structure for total day minutes. Perhaps, we can micro-segment the pricing structure for total day minutes charges.  
