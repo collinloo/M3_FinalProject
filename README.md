@@ -147,7 +147,7 @@ Observations
 * For feature 'customer service calls', the higher the number of calls to the customer service line, the higher the risk that the customers will leave.
 
 ### Examine individual instance
-![](/img/ind_inst.png?raw=true)
+![](/img/ind_inst.PNG?raw=true)
 
 Observations
 * In this instance, the actual churn rate is False or 0. Here we can how the the features in the model is working together to come to a false prediction.
