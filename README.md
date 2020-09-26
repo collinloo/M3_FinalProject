@@ -8,7 +8,7 @@
 * [The M Part](#The-M-Part)
 * [Model Evaluation](#Model-Evaluation)
 * [Alternate Model Model B](#Alternate-Model-Model-B)
-* [Model B Evaluation](Model-B-Evaluation)
+* [Model B Evaluation](#Model-B-Evaluation)
 * [Interpretaions](#Interpretations)
 * [Conclusion](#Conclusion)
 * [Recommendations](#Recommendations)
