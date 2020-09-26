@@ -4,13 +4,15 @@
 * [Introduction](#Introduction)
 * [Business Case](#Business-Case)
 * [Approach](#Approach)
-* [The OSEM Part](#The-OSEM-Part)
-* [The "M" Part](#The-"M"-Part)
+* [The OSE Part](#The-OSE-Part)
+* [The M Part](#The-M-Part)
 * [Model Evaluation](#Model-Evaluation)
-* [Alternate Model, Model B](#Alternate-Model,-Model-B)
+* [Alternate Model Model B](#Alternate-Model-Model-B)
 * [Model B Evaluation](Model-B-Evaluation)
 * [Interpretaions](#Interpretations)
-* [Conclusions](#Conclusions)
+* [Conclusion](#Conclusions)
+* [Recommendations](#Recommendations)
+* [Future Work](#Future-Work)
 
 ## Repo Structure
 * Root of the repo contains the main jupyter notebook and a python file of my fuctions
@@ -47,7 +49,7 @@ Out of the popular data science processes, such as CRISP-DM or KDD, we have sele
 In addition, we will evaluate four classifiers at different stages, base model, data resampling and fine tuning the hyperparameters.  The one that produces the higher recall score for both labels will be our final model.
 
 
-## The "OSE" Part
+## The OSE Part
 In the first 3 parts of the OSEMN framework, the following procedures were performed:
 1. Drop irrelevant columns.
 2. Group States by Regions.
@@ -59,7 +61,7 @@ In the first 3 parts of the OSEMN framework, the following procedures were perfo
 8. Drop columns showing strong multicollinearity.
 9. Perform one hot encoding with pandas get_dummies
 
-## The "M" Part
+## The M Part
 ### Baseline Model 
 Create a baseline Model that composes of 4 classifiers, Logistic Regression, KNN, Random Forest and XGBoost.  Fit the model with defalut parameters.  
 
@@ -97,7 +99,7 @@ ROC Curve
 ![](/img/ROC.png?raw=true)
 
 
-## Alternate Model,  Model B
+## Alternate Model Model B
 The sample data includes States where the customers reside. Perhaps, the geographic data might provide additional insights as to why and where the churn happen. Here we will construct another model without grouping States by Region. It will be referred to as model B.
 
 ### Baseline
@@ -126,7 +128,7 @@ Model B will be our final model and we will use in our next step, model interpre
 We will use Shap to help explain our model because it is provides a clear picture as to how each independent variables impact the model outcomes.
 
 ### Feature Important
-![](/img/fea_imp.png?raw=true)
+![](/img/shap_gea_imp.png?raw=true)
 
 Observations
 * The 'total day minutes' and 'voice mail plan_yes' features have the biggest impact on the model outcome. It changes the predicted churn probability by about 120% (approx. 1.2 on the x-axis) and 98% on average respectively.
@@ -136,13 +138,13 @@ Observations
 ![](/img/shap_val_by_fea.png?raw=true)
 
 Observations
-* In general, the higher the actual feature values in 'total day minutes' (red dots), the higher the prediction in the true churn rate. On the hand, the lower their actual feature values (blue dots), reduce the true churn rate.
+* In general, the higher the actual feature values in 'total day minutes' (red dots), the higher the prediction in the 'churn' label.  On the hand, the lower their actual feature values (blue dots), reduce the prediction for the 'churn' label.
 
-* Customers with voice mail plan tend not to churn while customers without a voice mail plan contribute more toward the churn prediction.
+* Customers with voice mail plan tend not to leave while customers without a voice mail plan contribute more toward the the churn label prediction.
 
-* High feature values in 'number vmial messages' has a positive impact in predicting the true churn label in the model outcomes.
+* High feature values in 'number vmial messages' has a positive impact in predicting the 'churn' label in the model outcomes.
 
-* For feature 'customer service calls', the higher the number of calls to the customer service line, the higher the risk that the customers will Churn.
+* For feature 'customer service calls', the higher the number of calls to the customer service line, the higher the risk that the customers will leave.
 
 ### Examine individual instance
 ![](/img/ind_inst.png?raw=true)
@@ -153,7 +155,7 @@ Observations
 
 
 
-## Conclusions
+## Conclusion
 ### Our Classifier
 
 All of the selected supervised learning methods in this project are capable of tackling binary classification. Each have their strengths and weaknesses for different business situations. In our case of predicting the Churn rate, the XGBosst classifier out performed the other three classifiers in term of the accuracy, f1_score, precision and recall scores. Especially the recall score because we need to identify all potential customers that are like to cancel their services.
@@ -172,7 +174,7 @@ Another approach we can implement is to model what the airline industry is offer
 
 4. 'Customer service calls': The model indicates that customers with high number of service calls show higher risk of churn. A analysis of the call nature will help us prioritize area of improvements. Questions like is the call information or technical? Are customers calling with the same questions? If yes, it would suggest that more training are needed for the customer service agents.
 
-## Future work
+## Future Work
 1. In this project, we have selected four different types of supervised learning algorithms namely, Logistic Regression, K-Nearest Neighbors, Random Forest and XGBosst, because each classifier employs different algorithm to optimize predictions. It would be interesting to see what type of results we could obtain, if we were to use other algorithms, such as Bayesian Classification or the Support Vector Machines.
 2. We can also try different techniques to deal with class imbalance problems, for instance, using oversampling and undersampling and see how well each of our models performs.
 3. Each classifier come with number of parameters for fine tuning. Finding the best combination of parameters can be computationally expensive. In this project we selected the most common parameters for fine tuning. If time allows, we can introduce more hyperparameters for each classifier to the grid search method can see where it will bring us in term of the model performances.
