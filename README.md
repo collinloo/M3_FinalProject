@@ -106,6 +106,10 @@ The sample data includes States where the customers reside. Perhaps, the geograp
 Model B baseline classification scores
 ![](/img/mdl_b_baseline_score.png?raw=true)
 
+### Tuned
+Model B classification scores after tuning
+![](/img/mdl_b_tuned_comp.png?raw=true)
+
 ### Tuned vs Baseline
 Model B performance gain/loss - tuend vs baseline
 ![](/img/mdl_b_tuned_baseline_comp.png?raw=true)
