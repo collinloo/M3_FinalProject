@@ -9,9 +9,9 @@
 * [Model Evaluation](#Model-Evaluation)
 * [Alternate Model Model B](#Alternate-Model-Model-B)
 * [Model B Evaluation](#Model-B-Evaluation)
-* [Interpretaion](#Interpretations)
+* [Interpretaion](#Interpretation)
 * [Conclusion](#Conclusion)
-* [Recommendation](#Recommendations)
+* [Recommendation](#Recommendation)
 * [Future Work](#Future-Work)
 
 ## Repo Structure
