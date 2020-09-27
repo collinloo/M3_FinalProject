@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.metrics import accuracy_score, roc_curve, auc, classification_report
 from sklearn.metrics import confusion_matrix, plot_confusion_matrix, roc_auc_score
+from sklearn.metrics import recall_score, make_scorer
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 import time
@@ -41,7 +42,7 @@ def pd_ohe(df):
     # create category list
     cat_col = df.select_dtypes(object).columns
     
-    # perform OHE and combine concat dataframes
+    # perform OHE and concat dataframes
     dummies = pd.get_dummies(df[cat_col], prefix=cat_col, drop_first=True)
     x_ohe = df.drop(cat_col, axis=1)
     x_ohe = pd.concat([dummies, x_ohe], axis=1)
@@ -109,8 +110,10 @@ def plot_clf_rpt(df_clf_rpt, clf_dict):
     # separate classification report by 'Not Churn' & 'Churn'
     for k, v in churn_dict.items():
         scores_lst = {}
+        # loop thru' list of classifiers
         for key in clf_dict.keys():
             tmp = []
+            # loop thru level 1 column name
             for name in col_names:
                 tmp.append(df_clf_rpt[(key,name)][v])
         
@@ -178,6 +181,9 @@ def fit_evl_grdsch(alg_dict, params, df_list):
     X_train, y_train, X_test, y_test = [df for df in df_list]
     results = []
     
+    # create scorer
+    recall_scorer = make_scorer(recall_score)
+    
     for (alg_name, alg), (p_name, param) in zip(alg_dict.items(), params.items()):
         # start timer
         start_time = process_time()
@@ -189,11 +195,13 @@ def fit_evl_grdsch(alg_dict, params, df_list):
         
         # Perform GridSearch 
         print(f'running gridsearch for {alg_name}')
-#         alg_name = alg
         clf_pipe =  Pipeline([('scaler', StandardScaler()),
                       (alg_name, alg)
                      ])
+        # using roc_auc: 0.98:0.83
         p_name = GridSearchCV(clf_pipe, param_grid=param, cv=5, scoring='roc_auc')
+        # using recall_scorer: 0.98:0.81
+#         p_name = GridSearchCV(clf_pipe, param_grid=param, cv=5, scoring=recall_scorer)
         p_name.fit(X_train, y_train)
         best_param = p_name.best_params_
         best_score = p_name.best_score_

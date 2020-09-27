@@ -81,7 +81,7 @@ Scores changes SMOTE scores vs baseline
 
 
 ### Hypterparameter Tuning
-Define grid search parameter and set cross validation to 3.
+Define grid search parameter and set cross validation to 5.
 
 Tuned model with SMOTE classifcation scores
 ![](/img/tuned_baseline_scores.png?raw=true)
@@ -129,7 +129,7 @@ The XGBoost in Model B outperformed Model A in all aspect of the scores.
 Model B will be our final model and we will use in our next step, model interpretation.
 
 ## Interpretation
-We will use Shap to help explain our model because it is provides a clear picture as to how each independent variables impact the model outcomes.
+We will use Shap to help us explain our model because it provides a clearer picture as to how each independent variable impacts the model outcomes.
 
 ### Feature Important
 ![](/img/shap_fea_imp.png?raw=true)
