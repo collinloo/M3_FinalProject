@@ -93,7 +93,7 @@ Performance gain/loss - tuend vs baseline
 Based on the classification report charts, XGBoost is clearly the superior model. We will use it for the next step, model evaluation.
 
 ## Model Evaluation
-Comparing the train and test accuracy scores shows that this model might be over fitting.  We have 100% in train accuracy score, while test accuracy score is only 92.09%.  However, test AUC score is pretty good at 83.36% which means there is a 83.36% probability that the model will correctly distinguish between the two labels.  We will refer to this model as Model A.
+Comparing the train and test accuracy scores shows that this model might be over fitting.  We have 100% in train accuracy score, while test accuracy score is only 94.48%.  However, test AUC score is pretty good at 85.50% which means there is a 85.50% probability that the model will correctly distinguish between the two labels.  We will refer to this model as Model A.
 
 ROC Curve
 ![](/img/ROC.png?raw=true)
@@ -115,7 +115,7 @@ Model B performance gain/loss - tuend vs baseline
 ![](/img/mdl_b_tuned_baseline_comp.png?raw=true)
 
 ## Model B Evaluation
-There is a difference of about 5% between the train (99.91%) and test (94.84%) accuracy scores which suggests Model B is less over fitting than Model A.  Furthermore, Model B improves vastly in the AUC score, 88.06% vs 83.36%.
+There is a difference of about 5% between the train (100%) and test (95.44%) accuracy scores which suggests Model B is less overfitting than Model A.  Furthermore, Model B improves vastly in the AUC score, 89.48% vs 85.50%.
 
 ROC Curve
 ![](/img/mdl_b_roc.png?raw=true)

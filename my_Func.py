@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+from imblearn.over_sampling import SMOTE
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.metrics import accuracy_score, roc_curve, auc, classification_report
 from sklearn.metrics import confusion_matrix, plot_confusion_matrix, roc_auc_score
@@ -50,8 +51,54 @@ def pd_ohe(df):
     return x_ohe
 
 
+def eval_smote_ratio(df_list, clfs):
+    '''
+    signature:     eval_smote_size(df_list=list, clfs=list)
+    docstring:     loop thru' the ratio list to find the best AUC from fitting the classifiers
+    parameters:    take in list of trainning and testing dataframe and list of classifiers
+    return:        a dictionary that stores the best ratio for each classifier
+    '''
+    # list of ratios to test
+    ratios = [0.25, 0.33, 0.5, 0.7, 1]
+    names = ['0.25', '0.33','0.5','0.7','1']
+    score_dict = {}
+    
+    # unpack df in list
+    X_train, y_train, X_test, y_test = df_list
+    
+    for n, ratio in enumerate(ratios):
+        smote = SMOTE(sampling_strategy=ratio, random_state=36)
+        X_train_resamp, y_train_resamp = smote.fit_sample(X_train, y_train)
+        #fit a model
+        temp = []
+        # loop thru' list of classifier and calculate auc score
+        for clf in clfs:
+            clf_name = type(clf).__name__ 
+            clf_name = clf.fit(X_train_resamp, y_train_resamp)
+            y_hat_test = clf.predict(X_test)
+            fpr, tpr, thresholds = roc_curve(y_test, y_hat_test)
+            auc = roc_auc_score(y_test, y_hat_test)
+            # append auc at ratio value
+            temp.append(auc)
+        # update dict
+        score_dict[names[n]] = temp
+   
+    # convert score dict to df
+    pd_col = [type(x).__name__ for x in clfs]
+    df_auc = pd.DataFrame.from_dict(score_dict).T
+    df_auc.columns = pd_col
+    
+    # get the max auc
+    best_ratio = {}
+    for name in df_auc.columns:
+        max_v = df_auc[name].max()
+        best_ratio[name] = float(df_auc.index[df_auc[name] == max_v].values[0])
+    
+    
+    return best_ratio
+
+
 def fit_eval_clf(clfs, df_list, disp_cm=True):
-# def fit_eval_clf(clfs, X_train, y_train, X_test, y_test, disp_cm=True):
     '''
     signature:     fit_eval_clf(clfs=array/list, X_train=dataframe, y_train=dataframe
                    X_test=dataframe, y_test=dataframe, disp_cm=bool)
@@ -62,7 +109,7 @@ def fit_eval_clf(clfs, df_list, disp_cm=True):
     '''
                                                
     # assign dfs
-    X_train, y_train, X_test, y_test = [df for df in df_list]
+    X_train, y_train, X_test, y_test = df_list
                                         
     # declare dict obj to store classification report
     clf_rpt_dict = {}
@@ -91,7 +138,56 @@ def fit_eval_clf(clfs, df_list, disp_cm=True):
         return pd.concat(clf_rpt_dict.values(), axis=1, keys=clf_rpt_dict.keys()), clf_rpt_dict
     else:
         return pd.concat(clf_rpt_dict.values(), axis=1, keys=clf_rpt_dict.keys()), clf_rpt_dict
-                                
+
+
+def fit_eval_clf_smote(clfs, df_list, best_ratio, disp_cm=True):
+# def fit_eval_clf(clfs, X_train, y_train, X_test, y_test, disp_cm=True):
+    '''
+    signature:     fit_eval_clf(clfs=array/list, df_list=array/list, best_ratio=dictionary, disp_cm=bool)
+    docstring:     run SMOTE with best ratio then run each classifier in the list through the pipeline
+    parameters:    takes in a list of classifier, X and y training and testing dataset,
+                   option to output the confusion matrix plot
+    return:        classification report data in dataframe and disctionary format and y_pred from each clf.
+    '''
+                                               
+    # assign dfs
+    b_X_train, b_y_train, X_test, y_test = df_list
+                                        
+    # declare dict obj to store classification report
+    clf_rpt_dict = {}
+    # declare list to store fit classifiers results
+    classifiers = []
+    # declare list to store y_pred
+    y_pred_lst = []
+    # fit model via pipeline
+    for clf, ratio in zip(clfs, best_ratio.values()):
+        smote = SMOTE(random_state=36, sampling_strategy=ratio)
+        X_train, y_train = smote.fit_sample(b_X_train, b_y_train)
+        clf_pipe =  Pipeline([('scaler', StandardScaler()),
+                      (type(clf).__name__, clf)
+                     ])
+        clf_pipe.fit(X_train, y_train)
+        # predict y
+        y_hat_test = clf_pipe.predict(X_test)
+        # append pred y
+        y_pred_lst.append((y_test, y_hat_test))
+        # convert classification report to dictionary
+        clf_rpt_dict[type(clf).__name__] = pd.DataFrame(classification_report(y_test, y_hat_test,
+                                    target_names=['Not Churn', 'Churn'], output_dict=True)).T
+        classifiers.append(clf_pipe)
+        
+    # plot confusion matrix
+    if disp_cm == True:
+        fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(16,9))
+        for class_, name, ax in zip(classifiers, clfs, axes.flatten()):
+            plot_confusion_matrix(class_, X_test, y_test, cmap='Blues', normalize='true', ax=ax)
+            ax.title.set_text(f"Normalized Confusion Matrix - {type(name).__name__}")
+            plt.subplots_adjust(bottom=0.1, top=0.9)
+        plt.show()
+        return pd.concat(clf_rpt_dict.values(), axis=1, keys=clf_rpt_dict.keys()), clf_rpt_dict, y_pred_lst
+    else:
+        return pd.concat(clf_rpt_dict.values(), axis=1, keys=clf_rpt_dict.keys()), clf_rpt_dict, y_pred_lst
+                 
 
 def plot_clf_rpt(df_clf_rpt, clf_dict):
     '''
@@ -166,25 +262,24 @@ def plot_gain_loss(new_rpt, base_rpt, columns, comp):
             ax.legend(loc='lower right')             
             
             
-def fit_evl_grdsch(alg_dict, params, df_list):
-# def fit_evl_grdsch(alg_dict, params, X_data, y_data):                                        
+def fit_evl_grdsch(alg_dict, params, df_list, best_ratio):
     '''
     signature:     fit_tuned_model(alg_dict=dictionary, params=array/list
-                   , X_data=df, y_data=df).
+                   , best_eastimator=dictionary).
     docstring:     run GridSearchCV to find the best combination of parameters.      
     parameters:    take in a classifier objects stored in dictionary list, the grid params for
-                   GridSearchCV, X training data and y training data.
+                   GridSearchCV, train & test df in list and smote ratio in dict form.
     return:        A pandas dataframe   
     '''
                    
     # assign dfs
-    X_train, y_train, X_test, y_test = [df for df in df_list]
+    b_X_train, b_y_train, X_test, y_test = [df for df in df_list]
     results = []
     
     # create scorer
     recall_scorer = make_scorer(recall_score)
     
-    for (alg_name, alg), (p_name, param) in zip(alg_dict.items(), params.items()):
+    for (alg_name, alg), (p_name, param), ratio in zip(alg_dict.items(), params.items(), best_ratio.values()):
         # start timer
         start_time = process_time()
               
@@ -195,6 +290,8 @@ def fit_evl_grdsch(alg_dict, params, df_list):
         
         # Perform GridSearch 
         print(f'running gridsearch for {alg_name}')
+        smote = SMOTE(random_state=36, sampling_strategy=ratio)
+        X_train, y_train = smote.fit_sample(b_X_train, b_y_train)
         clf_pipe =  Pipeline([('scaler', StandardScaler()),
                       (alg_name, alg)
                      ])
@@ -255,23 +352,27 @@ def plot_roc_cur(y_test, y_test_pred, sec_y_test=None, sec_y_pred=None, sec=None
         plt.show()           
             
             
-def mdl_validation(clf_name, clf, df_list):
-# def mdl_validation(clf_name, clf, X_train, y_train, X_test, y_test):                                        
+def mdl_validation(clf_name, clf, df_list, best_ratio):
     '''
-    signature:     mdl_validation(clf_name=sring, clf=classifier object, X_train=df, y_train=df,
-                   X_test=df, y_test=df)
+    signature:     mdl_validation(clf_name=sring, clf=classifier object, df_list=array/list,                                          best_ratio=float)
     docstring      set up pipeline and fit model to calculate y predicted values and the
                    accuracy score.
     parameters:    take in name of classifier, the classifier object, X and y train, test dataset
+                   and ratio for smote
     return:        y test predicted value, train and test accuracy scores
     '''
     
     # assign dfs
-    X_train, y_train, X_test, y_test = [df for df in df_list]                                       
-                                        
+    b_X_train, b_y_train, X_test, y_test = [df for df in df_list]                                       
+    
+    # fit smote
+    smote = SMOTE(random_state=36, sampling_strategy=best_ratio)
+    X_train, y_train = smote.fit_sample(b_X_train, b_y_train)
     # set up pipe
     valid_pipe = Pipeline([('scaler', StandardScaler()),
                            (clf_name, clf)])
+    
+    # fit smote with best ratio
     
     # fit the model
     valid_pipe.fit(X_train, y_train)
