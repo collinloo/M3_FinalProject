@@ -93,7 +93,7 @@ Performance gain/loss - tuend vs baseline
 Based on the classification report charts, XGBoost is clearly the superior model. We will use it for the next step, model evaluation.
 
 ## Model Evaluation
-Comparing the train and test accuracy scores shows that this model might be over fitting.  We have 100% in train accuracy score, while test accuracy score is only 94.48%.  However, test AUC score is pretty good at 85.50% which means there is a 85.50% probability that the model will correctly distinguish between the two labels.  We will refer to this model as Model A.
+Comparing the train and test accuracy scores shows that this model might be over fitting.  We have 100% in train accuracy score, while test accuracy score is only 94.24%.  However, test AUC score is pretty good at 87.25% which means there is a 87.25% probability that the model will correctly distinguish between the two labels.  We will refer to this model as Model A.
 
 ROC Curve
 ![](/img/ROC.png?raw=true)
@@ -115,7 +115,7 @@ Model B performance gain/loss - tuend vs baseline
 ![](/img/mdl_b_tuned_baseline_comp.png?raw=true)
 
 ## Model B Evaluation
-There is a difference of about 5% between the train (100%) and test (95.44%) accuracy scores which suggests Model B is less overfitting than Model A.  Furthermore, Model B improves vastly in the AUC score, 89.48% vs 85.50%.
+There is a difference of about 5% between the train (100%) and test (94.96%) accuracy scores which suggests Model B is less overfitting than Model A.  Furthermore, Model B improves vastly in the AUC score, 88.13% vs 87.25%.
 
 ROC Curve
 ![](/img/mdl_b_roc.png?raw=true)
@@ -174,9 +174,9 @@ Another approach we can implement is to model what the airline industry is offer
 
 2. 'Voice mail plan_yes': Customers without a voice mail plan tend to end their services with the company. It is possible that they find other competitor offering such feature without addition charges. We should carry out a comparative analysis to see if we can match the competitions, in order to keep the customers happy.
 
-3. 'No vmail messages': Are we charging customers when they exceed certain amount of voice mails? Do we have a limit as to how many voice mails or fixed length of time slot they are allow to use? Understanding what our competitors are offering is crucial so we can provide competitive offerings. Furthermore, if our current infrastructure reach a bottleneck, capacity and usage analysis will need to be carried out so that new offerings by our company will not over tax on our daily operations.
+3. 'Customer service calls': The model indicates that customers with high number of service calls show higher risk of churn. A analysis of the call nature will help us prioritize area of improvements. Questions like is the call information or technical? Are customers calling with the same questions? If yes, it would suggest that more training are needed for the customer service agents.
 
-4. 'Customer service calls': The model indicates that customers with high number of service calls show higher risk of churn. A analysis of the call nature will help us prioritize area of improvements. Questions like is the call information or technical? Are customers calling with the same questions? If yes, it would suggest that more training are needed for the customer service agents.
+4. 'Total eve minutes':  This issue is very similar to the 'total day minutes'.  Thus we are recommending the same approach, that is to micro segment the evening call rate and implement a VIP class for these group of customers.
 
 ## Future Work
 1. In this project, we have selected four different types of supervised learning algorithms namely, Logistic Regression, K-Nearest Neighbors, Random Forest and XGBosst, because each classifier employs different algorithm to optimize predictions. It would be interesting to see what type of results we could obtain, if we were to use other algorithms, such as Bayesian Classification or the Support Vector Machines.
